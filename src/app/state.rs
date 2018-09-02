@@ -1,12 +1,12 @@
 use std::sync::Arc;
 use std::sync::RwLock;
 use app;
-use diesel::pg::PgConnection;
-use r2d2_diesel::ConnectionManager;
-use r2d2::Pool;
+use actix::SyncArbiter;
+use actix::Addr;
+use app::db::executor::DbExecutor;
 
 pub struct StaticAppStateData {
-    pub db: Pool<ConnectionManager<PgConnection>>
+    pub db: Addr<DbExecutor>
 }
 
 pub struct DynamicAppStateData {
@@ -20,14 +20,15 @@ pub struct AppState {
 }
 
 pub fn initialize() -> AppState {
-    let db = app::db::get_connection_pool();
+    let db_pool = app::db::get_connection_pool();
+    let db_executor = SyncArbiter::start(3, move || DbExecutor(db_pool.clone()));
 
     AppState {
         dynamic_data: Arc::new(RwLock::new(
             DynamicAppStateData { message: "test".to_string() }
         )),
         static_data: Arc::new(
-            StaticAppStateData { db }
+            StaticAppStateData { db: db_executor }
         ),
     }
 }

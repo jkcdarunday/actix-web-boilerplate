@@ -1,18 +1,24 @@
-use app::models::user::User;
-use diesel::pg::PgConnection;
-use actix_web::Responder;
-use actix_web::Json;
 use actix_web::State;
+use actix_web::HttpResponse;
+use app::models::user::User;
 use app::state::AppState;
 use diesel::prelude::*;
+use futures::Future;
+use actix_web::error::ErrorInternalServerError;
+use actix_web::{FutureResponse, AsyncResponder};
+use app::db::executor::DbExecutor;
 
-pub fn list(state: (State<AppState>)) -> impl Responder {
+pub fn list(state: (State<AppState>)) -> FutureResponse<HttpResponse> {
     use schema::users;
 
-    let connection = state.static_data.db.get().unwrap();
-    let result = users::table
-        .load::<User>(&*connection)
-        .expect("Failed to get users");
+    DbExecutor::load(&state, users::table)
+        .from_err()
+        .and_then(|result: QueryResult<Vec<User>>| {
+            let items = result
+                .map_err(|_| ErrorInternalServerError("Error loading users"))
+                .unwrap();
 
-    Json(result.to_vec())
+            Ok(HttpResponse::Ok().json(items))
+        })
+        .responder()
 }
