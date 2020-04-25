@@ -1,12 +1,10 @@
 use std::sync::Arc;
 use std::sync::RwLock;
-use app;
-use actix::SyncArbiter;
-use actix::Addr;
-use app::db::executor::DbExecutor;
+use crate::app;
+use crate::app::db::DbPool;
 
 pub struct StaticAppStateData {
-    pub db: Addr<DbExecutor>
+    pub db: DbPool
 }
 
 pub struct DynamicAppStateData {
@@ -21,14 +19,13 @@ pub struct AppState {
 
 pub fn initialize() -> AppState {
     let db_pool = app::db::get_connection_pool();
-    let db_executor = SyncArbiter::start(3, move || DbExecutor(db_pool.clone()));
 
     AppState {
         dynamic_data: Arc::new(RwLock::new(
             DynamicAppStateData { message: "test".to_string() }
         )),
         static_data: Arc::new(
-            StaticAppStateData { db: db_executor }
+            StaticAppStateData { db: db_pool }
         ),
     }
 }

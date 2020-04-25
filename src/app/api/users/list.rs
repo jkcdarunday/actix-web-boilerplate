@@ -1,24 +1,21 @@
-use actix_web::State;
-use actix_web::HttpResponse;
-use app::models::user::User;
-use app::state::AppState;
+use actix_web::{HttpResponse, web, Error};
+use crate::app::models::*;
+use crate::app::state::AppState;
 use diesel::prelude::*;
-use futures::Future;
-use actix_web::error::ErrorInternalServerError;
-use actix_web::{FutureResponse, AsyncResponder};
-use app::db::executor::DbExecutor;
 
-pub fn list(state: (State<AppState>)) -> FutureResponse<HttpResponse> {
-    use schema::users;
+pub async fn list(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
+    use crate::schema::users;
 
-    DbExecutor::load(&state, users::table)
-        .from_err()
-        .and_then(|result: QueryResult<Vec<User>>| {
-            let items = result
-                .map_err(|_| ErrorInternalServerError("Error loading users"))
-                .unwrap();
+    let con = state.static_data.db.get()
+        .expect("Failed to retrieve DB connection from pool");
 
-            Ok(HttpResponse::Ok().json(items))
-        })
-        .responder()
+    let users = web::block(move || users::table.load::<user::User>(&*con))
+        .await
+        .map_err(|e| {
+
+            HttpResponse::InternalServerError().body(format!("{}", e))
+        })?;
+
+    Ok(HttpResponse::Ok().json(users))
 }
+

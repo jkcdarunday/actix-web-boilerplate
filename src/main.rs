@@ -10,21 +10,20 @@ extern crate r2d2_diesel;
 extern crate serde_derive;
 extern crate serde;
 
-use actix_web::server;
+use actix_web::{HttpServer, App, middleware};
 
 pub mod app;
 pub mod schema;
 
-
-fn main() {
-    let sys = actix::System::new("server");
-
-    let state = app::state::initialize();
-
-    server::new(move || app::init::initialize(state.clone()))
+#[actix_rt::main]
+async fn main() -> std::result::Result<(), std::io::Error> {
+    HttpServer::new(|| {
+        App::new()
+            .configure(app::init::initialize)
+            .wrap(middleware::Logger::default())
+    })
         .bind("127.0.0.1:8088")
         .unwrap()
-        .start();
-
-    let _ = sys.run();
+        .run()
+        .await
 }
