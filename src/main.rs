@@ -17,8 +17,10 @@ pub mod schema;
 
 #[actix_rt::main]
 async fn main() -> std::result::Result<(), std::io::Error> {
-    HttpServer::new(|| {
+    let state = crate::app::state::initialize();
+    HttpServer::new(move || {
         App::new()
+            .data(state.clone())
             .configure(app::init::initialize)
             .wrap(middleware::Logger::default())
     })
