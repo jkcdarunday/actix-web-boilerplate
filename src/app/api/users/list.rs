@@ -12,7 +12,6 @@ pub async fn list(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
     let users = web::block(move || users::table.load::<user::User>(&*con))
         .await
         .map_err(|e| {
-
             HttpResponse::InternalServerError().body(format!("{}", e))
         })?;
 

@@ -1,4 +1,3 @@
-#![feature(specialization)]
 extern crate actix;
 extern crate actix_web;
 #[macro_use]
@@ -30,8 +29,7 @@ async fn main() -> std::result::Result<(), std::io::Error> {
             .configure(app::init::initialize)
             .wrap(middleware::Logger::default())
     })
-        .bind(listen_address)
-        .unwrap()
+        .bind(listen_address)?
         .run()
         .await
 }
