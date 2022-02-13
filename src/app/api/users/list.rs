@@ -1,8 +1,9 @@
-use actix_web::{HttpResponse, web, Error};
+use actix_web::{get, HttpResponse, web, Error};
 use crate::app::models::*;
 use crate::app::state::AppState;
 use diesel::prelude::*;
 
+#[get("/users")]
 pub async fn list(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
     use crate::schema::users;
 
