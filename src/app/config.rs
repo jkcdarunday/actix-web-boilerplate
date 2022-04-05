@@ -1,13 +1,18 @@
 use std::sync::RwLock;
-use config::Config;
+use config::{Config, File, FileFormat, Environment};
 
 lazy_static! {
-	pub static ref CONFIG: RwLock<Config> = RwLock::new({
-        let mut settings = Config::default();
-        settings.merge(config::File::with_name("config.toml")).unwrap();
-        settings.merge(config::Environment::with_prefix("APP")).unwrap();
+    pub static ref CONFIG: RwLock<Config> = RwLock::new({
+        let builder = Config::builder()
+            .add_source(File::new("config.toml", FileFormat::Toml))
+            .add_source(Environment::with_prefix("APP"));
 
-        settings
+        match builder.build() {
+            Ok(config) => config,
+            Err(e) => {
+                panic!("Config Error: {}", e);
+            }
+        }
     });
 }
 
