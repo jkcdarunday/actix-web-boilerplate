@@ -2,21 +2,23 @@
 authors = ["Jan Keith Darunday <jkcdarunday@gmail.com>"]
 name = "actix-web-boilerplate"
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 actix = "0.12.0"
 actix-web = "3.3.3"
+actix-rt = "2.6.0"
+
 futures = "0.3.21"
+
+diesel = { version = "1.4.8", features = ["postgres"] }
 r2d2 = "0.8.9"
 r2d2-diesel = "1.0.0"
+
 serde = "1.0.136"
 serde_derive = "1.0.136"
 serde_json = "1.0.79"
-actix-rt = "2.6.0"
-config = "0.13.0"
-lazy_static = "1.4.0"
 
-[dependencies.diesel]
-features = ["postgres"]
-version = "1.4.8"
+config = "0.13.0"
+
+lazy_static = "1.4.0"
