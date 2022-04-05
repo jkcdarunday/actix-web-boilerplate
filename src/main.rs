@@ -15,22 +15,25 @@ extern crate serde;
 extern crate lazy_static;
 extern crate config;
 
-use actix_web::{HttpServer, App, middleware};
+use actix_web::{HttpServer, App, web::Data, middleware::Logger};
 
 pub mod app;
 pub mod schema;
 
-#[actix_rt::main]
+#[actix_web::main]
 async fn main() -> std::result::Result<(), std::io::Error> {
     let listen_address: String = app::config::get("listen_address");
     let state = crate::app::state::initialize();
 
     println!("Listening to requests at {}...", listen_address);
     HttpServer::new(move || {
+        let state_data = Data::new(state.clone());
+        let logger = Logger::default();
+
         App::new()
-            .data(state.clone())
+            .wrap(logger)
+            .app_data(state_data)
             .configure(app::init::initialize)
-            .wrap(middleware::Logger::default())
     })
         .bind(listen_address)?
         .run()

@@ -1,21 +1,27 @@
-use actix_web::{get, HttpResponse, web, Error};
+use actix_web::{get, HttpResponse, web::block, web::Data, Error};
 use crate::app::models::*;
 use crate::app::state::AppState;
 use diesel::prelude::*;
 
 #[get("/users")]
-pub async fn list(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
-    use crate::schema::users;
+pub async fn list(state: Data<AppState>) -> Result<HttpResponse, Error> {
+    let users_list = block(move || {
+        use crate::schema::users::dsl::*;
 
-    let con = state.static_data.db.get()
-        .expect("Failed to retrieve DB connection from pool");
+        let conn = state.static_data.db.get()
+            .expect("Failed to retrieve DB connection from pool");
 
-    let users = web::block(move || users::table.load::<user::User>(&*con))
+        users.load::<user::User>(&*conn)
+    })
         .await
-        .map_err(|e| {
-            HttpResponse::InternalServerError().body(format!("{}", e))
-        })?;
+        .map_err(actix_web::error::ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(users))
+    match users_list {
+        Ok(users) => Ok(HttpResponse::Ok().json(users)),
+        Err(e) => {
+            let res = HttpResponse::InternalServerError().body(format!("{}", e));
+            Ok(res)
+        }
+    }
 }
 
