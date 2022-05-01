@@ -4,7 +4,6 @@ extern crate actix_web;
 extern crate diesel;
 extern crate futures;
 extern crate r2d2;
-extern crate r2d2_diesel;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde;
@@ -25,7 +24,7 @@ async fn main() -> std::result::Result<(), std::io::Error> {
     println!("Listening to requests at {}...", listen_address);
     HttpServer::new(move || {
         App::new()
-            .data(state.clone())
+            .app_data(state.clone())
             .configure(app::init::initialize)
             .wrap(middleware::Logger::default())
     })
