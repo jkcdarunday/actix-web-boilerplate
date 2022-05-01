@@ -1,6 +1,6 @@
 use r2d2::Pool;
 use diesel::pg::PgConnection;
-use r2d2_diesel::ConnectionManager;
+use diesel::r2d2::ConnectionManager;
 
 pub type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
