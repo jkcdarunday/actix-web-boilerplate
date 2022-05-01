@@ -19,12 +19,13 @@ pub mod schema;
 #[actix_rt::main]
 async fn main() -> std::result::Result<(), std::io::Error> {
     let listen_address: String = app::config::get("listen_address");
-    let state = crate::app::state::initialize();
 
     println!("Listening to requests at {}...", listen_address);
     HttpServer::new(move || {
+        let db_pool = crate::app::db::get_connection_pool();
+
         App::new()
-            .app_data(state.clone())
+            .app_data(db_pool)
             .configure(app::init::initialize)
             .wrap(middleware::Logger::default())
     })

@@ -1,13 +1,13 @@
 use actix_web::{get, HttpResponse, web, Responder};
 use crate::app::models::*;
-use crate::app::state::AppState;
 use diesel::prelude::*;
+use crate::app::db::DbPool;
 
 #[get("/users")]
-pub async fn list(state: web::Data<AppState>) -> impl Responder {
+pub async fn list(db_pool: web::Data<DbPool>) -> impl Responder {
     use crate::schema::users;
 
-    let con_result = state.static_data.db.get();
+    let con_result = db_pool.get();
     if let Err(e) = con_result {
         return HttpResponse::InternalServerError().body(format!("{:?}", e));
     }
