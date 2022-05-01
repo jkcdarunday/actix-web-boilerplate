@@ -11,6 +11,7 @@ extern crate lazy_static;
 extern crate config;
 
 use actix_web::{HttpServer, App, middleware};
+use actix_web::web::Data;
 
 pub mod app;
 pub mod schema;
@@ -18,13 +19,12 @@ pub mod schema;
 #[actix_rt::main]
 async fn main() -> std::result::Result<(), std::io::Error> {
     let listen_address: String = app::config::get("listen_address");
+    let db_pool = Data::new(crate::app::db::get_connection_pool());
 
     println!("Listening to requests at {}...", listen_address);
     HttpServer::new(move || {
-        let db_pool = crate::app::db::get_connection_pool();
-
         App::new()
-            .app_data(db_pool)
+            .app_data(db_pool.clone())
             .configure(app::init::initialize)
             .wrap(middleware::Logger::default())
     })
