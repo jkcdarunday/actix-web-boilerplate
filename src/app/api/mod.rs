@@ -1,3 +1,1 @@
-pub mod users {
-    pub mod list;
-}
+pub mod users;
