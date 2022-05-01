@@ -2,7 +2,6 @@ extern crate actix;
 extern crate actix_web;
 #[macro_use]
 extern crate diesel;
-extern crate futures;
 extern crate r2d2;
 #[macro_use]
 extern crate serde_derive;
