@@ -10,8 +10,8 @@ extern crate serde;
 extern crate lazy_static;
 extern crate config;
 
-use actix_web::{HttpServer, App, middleware};
 use actix_web::web::Data;
+use actix_web::{middleware, App, HttpServer};
 
 pub mod app;
 pub mod schema;
@@ -28,7 +28,7 @@ async fn main() -> std::result::Result<(), std::io::Error> {
             .configure(app::init::initialize)
             .wrap(middleware::Logger::default())
     })
-        .bind(listen_address)?
-        .run()
-        .await
+    .bind(listen_address)?
+    .run()
+    .await
 }
