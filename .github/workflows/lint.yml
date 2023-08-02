@@ -17,18 +17,35 @@ jobs:
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: nightly
           override: true
           components: clippy, rustfmt
 
+      - name: Use cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo check tools
+        run: |
+          cargo install --locked cargo-binstall
+          cargo binstall --locked -y cargo-outdated
+          cargo binstall --locked -y cargo-udeps
+          cargo binstall --locked -y cargo-audit
+          cargo binstall --locked -y cargo-pants  
+
       - name: Run clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --all-targets --all-features -- -D warnings
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
       - name: Run fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt --all -- --check
+
+      - name: Run outdated
+        run: cargo outdated --exit-code 1
+
+      - name: Run udeps
+        run: cargo udeps
+
+      - name: Run audit
+        run: cargo audit
+
+      - name: Run pants
+        run: cargo pants
