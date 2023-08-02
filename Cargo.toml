@@ -3,6 +3,7 @@ authors = ["Jan Keith Darunday <jkcdarunday@gmail.com>"]
 name = "actix-web-boilerplate"
 version = "0.1.0"
 edition = "2018"
+license= "MIT"
 
 [dependencies]
 actix = "0.13"
