@@ -1,5 +1,5 @@
 [package]
-authors = ["Jan Keith Darunday <jkcdarunday@gmail.com>"]
+authors = ["Jan Keith Darunday <github@jkcdarunday.mozmail.com>"]
 name = "actix-web-boilerplate"
 version = "0.1.0"
 edition = "2018"
