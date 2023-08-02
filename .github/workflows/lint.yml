@@ -24,9 +24,11 @@ jobs:
       - name: Use cache
         uses: Swatinem/rust-cache@v2
 
+      - name: Install cargo binstall
+        uses: taiki-e/install-action@cargo-binstall
+
       - name: Install cargo check tools
         run: |
-          cargo install --locked cargo-binstall
           cargo binstall --locked -y cargo-outdated
           cargo binstall --locked -y cargo-udeps
           cargo binstall --locked -y cargo-audit
