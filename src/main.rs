@@ -9,6 +9,7 @@ extern crate serde;
 #[macro_use]
 extern crate lazy_static;
 extern crate config;
+extern crate dotenv;
 
 use actix_web::web::Data;
 use actix_web::{middleware, App, HttpServer};

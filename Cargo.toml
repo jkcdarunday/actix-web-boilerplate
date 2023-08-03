@@ -15,6 +15,7 @@ serde_json = "1.0.104"
 actix-rt = "2.8.0"
 config = "0.13.3"
 lazy_static = "1.4.0"
+dotenv = "0.15.0"
 
 [dependencies.diesel]
 features = ["postgres", "r2d2"]

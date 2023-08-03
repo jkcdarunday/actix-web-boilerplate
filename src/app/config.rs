@@ -1,4 +1,5 @@
 use config::Config;
+use dotenv::dotenv;
 
 lazy_static! {
     pub static ref CONFIG: Config = Config::builder()
@@ -9,5 +10,7 @@ lazy_static! {
 }
 
 pub fn get<'a, T: serde::Deserialize<'a>>(key: &str) -> T {
+    dotenv().ok();
+
     CONFIG.get::<T>(key).unwrap()
 }
