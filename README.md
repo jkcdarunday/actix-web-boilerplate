@@ -23,7 +23,13 @@ The following are the notable folders with their descriptions:
 - You can set configuration variables in [config.toml](./config.toml)
 - You can also configuration variables via environment variables 
     which will override [config.toml](./config.toml)
-   - i.e. `APP_LISTEN_ADDRESS=localhost:9999`
+- You can also declare environment variables in a .env file which will get loaded by dotenv
+ 
+  Example of .env contents:
+  ```
+  APP_LISTEN_ADDRESS=localhost:9999
+  APP_DATABASE_URL=postgres://user:pass@localhost:5432/dbname
+  ```
 
 ## Building
 Build using cargo:
