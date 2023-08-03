@@ -1,5 +1,6 @@
 use crate::app::db::DbPool;
 use crate::app::error::AppError;
+use crate::app::lib::helpers::get_connection;
 use crate::app::models::*;
 use crate::schema::users;
 use actix_web::{get, post, web, HttpResponse, Responder, Result};
@@ -8,11 +9,7 @@ use diesel::prelude::*;
 
 #[get("/users")]
 pub async fn list(db_pool: web::Data<DbPool>) -> Result<impl Responder, AppError> {
-    let mut con = db_pool.get().map_err(|e| {
-        AppError::new(500)
-            .cause(e)
-            .message("Failed to load database")
-    })?;
+    let mut con = get_connection(db_pool)?;
 
     let query_result = users::table
         .load::<user::User>(&mut *con)
@@ -26,11 +23,7 @@ pub async fn create(
     db_pool: web::Data<DbPool>,
     user: web::Json<user::User>,
 ) -> Result<impl Responder, AppError> {
-    let mut con = db_pool.get().map_err(|e| {
-        AppError::new(500)
-            .cause(e)
-            .message("Failed to load database")
-    })?;
+    let mut con = get_connection(db_pool)?;
 
     let query_result = insert_into(users::table)
         .values((

@@ -3,6 +3,7 @@ use diesel::r2d2::ConnectionManager;
 use r2d2::Pool;
 
 pub type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
+pub type DbPooledConnection = r2d2::PooledConnection<ConnectionManager<PgConnection>>;
 
 pub fn get_connection_pool() -> DbPool {
     let database_url: String = crate::app::config::get("database_url");
