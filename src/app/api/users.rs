@@ -1,23 +1,21 @@
 use crate::app::db::DbPool;
+use crate::app::error::AppError;
 use crate::app::models::*;
-use actix_web::{get, web, HttpResponse, Responder};
+use crate::schema::users;
+use actix_web::{get, web, HttpResponse, Responder, Result};
 use diesel::prelude::*;
 
 #[get("/users")]
-pub async fn list(db_pool: web::Data<DbPool>) -> impl Responder {
-    use crate::schema::users;
+pub async fn list(db_pool: web::Data<DbPool>) -> Result<impl Responder, AppError> {
+    let mut con = db_pool.get().map_err(|e| {
+        AppError::new(500)
+            .cause(e)
+            .message("Failed to load database")
+    })?;
 
-    let con_result = db_pool.get();
-    if let Err(e) = con_result {
-        return HttpResponse::InternalServerError().body(format!("{:?}", e));
-    }
+    let query_result = users::table
+        .load::<user::User>(&mut *con)
+        .map_err(|e| AppError::new(500).cause(e).message("Failed to load users"))?;
 
-    let mut con = con_result.unwrap();
-    let query_result =
-        web::block(move || users::table.load::<user::User>(&mut *con).unwrap()).await;
-    if let Err(e) = query_result {
-        return HttpResponse::InternalServerError().body(format!("{:?}", e));
-    }
-
-    HttpResponse::Ok().json(query_result.unwrap())
+    Ok(HttpResponse::Ok().json(query_result))
 }
