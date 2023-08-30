@@ -29,10 +29,10 @@ jobs:
 
       - name: Install cargo check tools
         run: |
-          cargo binstall --locked -y cargo-outdated
-          cargo binstall --locked -y cargo-udeps
-          cargo binstall --locked -y cargo-audit
-          cargo binstall --locked -y cargo-pants  
+          cargo binstall --force --locked -y cargo-outdated
+          cargo binstall --force --locked -y cargo-udeps
+          cargo binstall --force --locked -y cargo-audit
+          cargo binstall --force --locked -y cargo-pants  
 
       - name: Run clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
