@@ -12,7 +12,7 @@ pub fn user_id_exists(id: i32) -> Result<(), ValidationError> {
         .load::<User>(&mut DB.get().unwrap())
         .map_err(|_| ValidationError::new("User not found"))?;
 
-    if query_result.len() == 0 {
+    if query_result.is_empty() {
         return Err(ValidationError::new("User not found"));
     }
 

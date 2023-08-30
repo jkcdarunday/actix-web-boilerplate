@@ -31,6 +31,6 @@ fn handle_validation_errors(validation_errors: ValidationErrors) -> Error {
 pub fn handle_error(error: actix_web_validator::Error, _request: &HttpRequest) -> Error {
     match error {
         actix_web_validator::Error::Validate(errors) => handle_validation_errors(errors),
-        _ => ErrorInternalServerError("Internal Server Error").into(),
+        _ => ErrorInternalServerError("Internal Server Error"),
     }
 }
