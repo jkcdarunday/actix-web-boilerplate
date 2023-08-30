@@ -1,18 +1,15 @@
 extern crate actix;
 extern crate actix_web;
+extern crate config;
 #[macro_use]
 extern crate diesel;
 extern crate r2d2;
 #[macro_use]
 extern crate serde_derive;
-extern crate serde;
-#[macro_use]
-extern crate lazy_static;
-extern crate config;
-extern crate dotenv;
+
+use actix_web::{middleware, App, HttpServer};
 
 use crate::app::db::DB;
-use actix_web::{middleware, App, HttpServer};
 
 pub mod app;
 pub mod schema;
