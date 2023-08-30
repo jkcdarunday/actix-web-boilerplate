@@ -8,8 +8,10 @@ extern crate r2d2;
 extern crate serde_derive;
 
 use actix_web::{middleware, App, HttpServer};
+use actix_web_validator::{JsonConfig, PathConfig, QueryConfig};
 
 use crate::app::db::DB;
+use crate::app::lib::error_handler::handle_error;
 
 pub mod app;
 pub mod schema;
@@ -23,6 +25,9 @@ async fn main() -> Result<(), std::io::Error> {
     println!("Listening to requests at {}...", listen_address);
     HttpServer::new(move || {
         App::new()
+            .app_data(PathConfig::default().error_handler(handle_error))
+            .app_data(QueryConfig::default().error_handler(handle_error))
+            .app_data(JsonConfig::default().error_handler(handle_error))
             .configure(app::init::initialize)
             .wrap(middleware::Logger::default())
     })
