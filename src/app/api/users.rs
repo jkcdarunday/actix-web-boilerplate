@@ -1,6 +1,5 @@
 use actix_web::{delete, get, post, web, HttpResponse, Responder, Result};
 use actix_web_validator::Path;
-use diesel::insert_into;
 use diesel::prelude::*;
 use validator::Validate;
 
@@ -25,7 +24,7 @@ pub async fn list() -> Result<impl Responder, AppError> {
 pub async fn create(user: web::Json<user::User>) -> Result<impl Responder, AppError> {
     let mut con = get_connection()?;
 
-    let query_result = insert_into(users::table)
+    let query_result = diesel::insert_into(users::table)
         .values((
             users::id.eq(user.id),
             users::username.eq(&user.username),
