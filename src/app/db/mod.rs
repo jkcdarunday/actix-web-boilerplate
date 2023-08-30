@@ -1,11 +1,12 @@
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
-use r2d2::Pool;
+use once_cell::sync::Lazy;
+use r2d2::{Pool, PooledConnection};
 
-pub type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
-pub type DbPooledConnection = r2d2::PooledConnection<ConnectionManager<PgConnection>>;
+pub type DbPool = Pool<ConnectionManager<PgConnection>>;
+pub type DbPooledConnection = PooledConnection<ConnectionManager<PgConnection>>;
 
-pub fn get_connection_pool() -> DbPool {
+pub static DB: Lazy<DbPool> = Lazy::new(|| {
     let database_url: String = crate::app::config::get("database_url");
 
     println!("Connecting to database {}...", database_url);
@@ -14,4 +15,4 @@ pub fn get_connection_pool() -> DbPool {
     Pool::builder()
         .build(manager)
         .expect("Failed to create database connection pool.")
-}
+});

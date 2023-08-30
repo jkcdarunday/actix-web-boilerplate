@@ -1,15 +1,15 @@
-use crate::app::db::DbPool;
-use crate::app::error::AppError;
-use crate::app::lib::helpers::get_connection;
-use crate::app::models::*;
-use crate::schema::users;
 use actix_web::{get, post, web, HttpResponse, Responder, Result};
 use diesel::insert_into;
 use diesel::prelude::*;
 
+use crate::app::error::AppError;
+use crate::app::lib::helpers::get_connection;
+use crate::app::models::*;
+use crate::schema::users;
+
 #[get("/users")]
-pub async fn list(db_pool: web::Data<DbPool>) -> Result<impl Responder, AppError> {
-    let mut con = get_connection(db_pool)?;
+pub async fn list() -> Result<impl Responder, AppError> {
+    let mut con = get_connection()?;
 
     let query_result = users::table
         .load::<user::User>(&mut *con)
@@ -19,11 +19,8 @@ pub async fn list(db_pool: web::Data<DbPool>) -> Result<impl Responder, AppError
 }
 
 #[post("/users")]
-pub async fn create(
-    db_pool: web::Data<DbPool>,
-    user: web::Json<user::User>,
-) -> Result<impl Responder, AppError> {
-    let mut con = get_connection(db_pool)?;
+pub async fn create(user: web::Json<user::User>) -> Result<impl Responder, AppError> {
+    let mut con = get_connection()?;
 
     let query_result = insert_into(users::table)
         .values((
